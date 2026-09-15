@@ -9,7 +9,7 @@ import os
 
 app = FastAPI(
     title="SivoAI",
-   description="Personal AI assistant powered by Qwen 2.5 3B",
+    description="Personal AI assistant",
     version="1.0.0"
 )
 
@@ -28,12 +28,12 @@ app.add_middleware(
 
 
 # =========================
-# Ollama
+# OpenRouter
 # =========================
 
-OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
+OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
-MODEL = "qwen2.5:3b"
+MODEL = "openrouter/free"
 
 
 # =========================
@@ -51,7 +51,7 @@ class Question(BaseModel):
 @app.get("/api")
 def api_home():
     return {
-        "message": "AfriAI API is running!",
+        "message": "SivoAI API is running!",
         "model": MODEL,
         "status": "online"
     }
@@ -67,12 +67,28 @@ def health():
 @app.post("/ask")
 def ask_ai(data: Question):
 
+    api_key = os.getenv("OPENROUTER_API_KEY")
+
+    if not api_key:
+        return {
+            "question": data.question,
+            "answer": "SivoAI is not configured with an AI API key."
+        }
+
     response = requests.post(
-        OLLAMA_URL,
+        OPENROUTER_URL,
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        },
         json={
             "model": MODEL,
-            "prompt": data.question,
-            "stream": False
+            "messages": [
+                {
+                    "role": "user",
+                    "content": data.question
+                }
+            ]
         },
         timeout=120
     )
@@ -81,9 +97,11 @@ def ask_ai(data: Question):
 
     result = response.json()
 
+    answer = result["choices"][0]["message"]["content"]
+
     return {
         "question": data.question,
-        "answer": result["response"]
+        "answer": answer
     }
 
 
