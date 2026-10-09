@@ -66,10 +66,10 @@ Computer Science student interested in AI engineering, software development, and
 
 - GitHub: "@BaloyiSivo" (https://github.com/BaloyiSivo)
 
-📄 License
+License
 
 A license has not yet been specified. Usage and redistribution permissions will be clarified when a license is added.
 
 ---
 
-⭐ If you find this project interesting, consider starring the repository to follow its development.
+If you find this project interesting, consider starring the repository to follow its development.
